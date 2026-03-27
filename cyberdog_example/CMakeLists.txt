@@ -22,4 +22,10 @@ add_executable(keybroad_commander src/keybroad_commander.cpp)
 ament_target_dependencies(keybroad_commander rclcpp rclcpp_action cyberdog_msg)
 target_link_libraries(keybroad_commander lcm) 
 
+install(TARGETS
+  cyberdogmsg_sender
+  keybroad_commander
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()

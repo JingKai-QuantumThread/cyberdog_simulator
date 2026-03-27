@@ -79,6 +79,21 @@ $ colcon build --merge-install --symlink-install --packages-up-to cyberdog_locom
 $ python3 src/cyberdog_simulator/cyberdog_gazebo/script/launchsim.py
 ```
 
+如果希望一键启动 Gazebo、RViz 和传感器自检，可使用：
+```
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/launchall.py
+```
+
+如果当前仿真包含雷达，建议使用：
+```
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/launchall.py --expect-lidar
+```
+
+可选参数示例：
+```
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/launchall.py --gazebo-delay 6 --sensor-delay 12 --echo-timeout 12
+```
+
 ### 也可以通过以下命令分别运行各程序：
 
 首先启动gazebo程序，于cyberdog_sim文件夹下进行如下操作：
@@ -92,6 +107,87 @@ $ ros2 launch cyberdog_gazebo gazebo.launch.py
 $ source /opt/ros/galactic/setup.bash
 $ source install/setup.bash
 $ ros2 launch cyberdog_gazebo gazebo.launch.py use_lidar:=true
+```
+
+### 传感器对照表
+
+当前机器人描述中的传感器与对应 ROS2 topic 如下：
+
+| link | 传感器类型 | 插件 | 主要 topic |
+| --- | --- | --- | --- |
+| `imu_link` | IMU | `libgazebo_ros_imu_sensor.so` | `/imu` |
+| `RGB_camera_link` | 单目 RGB 相机 | `libgazebo_ros_camera.so` | `/rgb_camera/image_raw` `/rgb_camera/camera_info` |
+| `D435_camera_link` | 深度相机 | `libgazebo_ros_camera.so` | `/d435_camera/depth/image_raw` `/d435_camera/depth/depth_image_raw` `/d435_camera/depth/camera_info` `/d435_camera/depth/depth_camera_info` `/d435_camera/depth/points` |
+| `AI_camera_link` | 双目相机 | `libgazebo_ros_camera.so` | `/ai_camera/left/image_raw` `/ai_camera/right/image_raw` `/ai_camera/left/camera_info` `/ai_camera/right/camera_info` |
+| `lidar_link` | CPU 激光雷达 | `libgazebo_ros_ray_sensor.so` | `/lidar/scan` |
+| `lidar_link` | GPU 激光雷达 | `libgazebo_ros_ray_sensor.so` | `/lidar_gpu/scan` |
+| `FR_knee` | 足端接触 | `libfoot_contact_plugin.so` + `libgazebo_ros_bumper.so` | `/foot_contact/fr` |
+| `FL_knee` | 足端接触 | `libfoot_contact_plugin.so` + `libgazebo_ros_bumper.so` | `/foot_contact/fl` |
+| `RR_knee` | 足端接触 | `libfoot_contact_plugin.so` + `libgazebo_ros_bumper.so` | `/foot_contact/rr` |
+| `RL_knee` | 足端接触 | `libfoot_contact_plugin.so` + `libgazebo_ros_bumper.so` | `/foot_contact/rl` |
+
+说明：
+- `use_lidar:=false` 时不会生成 `lidar_link` 上的两个雷达 topic。
+- 足端接触除了上表 ROS topic 外，原有自定义 `libfoot_contact_plugin.so` 输出仍然保留。
+
+### 如何调用传感器
+
+在启动仿真后，可先查看所有传感器 topic：
+```
+$ source /opt/ros/galactic/setup.bash
+$ source install/setup.bash
+$ ros2 topic list | egrep 'imu|rgb_camera|d435_camera|ai_camera|lidar|foot_contact'
+```
+
+常用查看命令示例：
+```
+$ ros2 topic echo /imu
+$ ros2 topic echo /lidar/scan
+$ ros2 topic echo /lidar_gpu/scan
+$ ros2 topic echo /foot_contact/fr
+$ ros2 topic hz /rgb_camera/image_raw
+$ ros2 topic hz /d435_camera/depth/image_raw
+$ ros2 topic hz /ai_camera/left/image_raw
+```
+
+图像类 topic 可直接用如下方式查看：
+```
+$ ros2 run rqt_image_view rqt_image_view
+```
+
+在 `rqt_image_view` 中选择以下任一 topic：
+```
+/rgb_camera/image_raw
+/d435_camera/depth/image_raw
+/ai_camera/left/image_raw
+/ai_camera/right/image_raw
+```
+
+点云可用如下命令确认是否在发布：
+```
+$ ros2 topic echo /d435_camera/depth/points --once
+```
+
+也可以直接运行传感器自检脚本：
+```
+$ source /opt/ros/galactic/setup.bash
+$ source install/setup.bash
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/check_sensors.py
+```
+
+如果当前是以 `use_lidar:=true` 启动仿真，建议使用：
+```
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/check_sensors.py --expect-lidar
+```
+
+自检脚本会检查：
+- topic 是否存在
+- topic 类型是否正确
+- IMU、图像、点云、激光、足端接触等关键 topic 能否收到一条消息
+
+可选参数：
+```
+$ python3 src/cyberdog_simulator/cyberdog_gazebo/script/check_sensors.py --echo-timeout 12 --topic-timeout 8
 ```
 
 然后启动cyberdog_locomotion仓的控制程序。在cyberdog_sim文件夹下运行：

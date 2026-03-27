@@ -31,7 +31,7 @@ def generate_launch_description():
 
     # cd 
     # open_cmd = os.path.join("cd ", cmd_path)
-    open_cmd = "cd " + cmd_path + " && ./cyberdog_control m s"
+    open_cmd = "cd " + cmd_path + " && ./cyberdog_control m s f"
     print(open_cmd)
 
     os.system(open_cmd)
