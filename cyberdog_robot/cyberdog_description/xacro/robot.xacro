@@ -3,6 +3,9 @@
 
     <xacro:arg name="ROBOT" default="cyber_dog" />
     <xacro:arg name="USE_LIDAR" default="false" />
+    <xacro:arg name="USE_REALSENSE_CAMERA" default="false" />
+    <xacro:arg name="USE_STEREO_CAMERA" default="false" />
+    <xacro:arg name="USE_AI_CAMERA" default="false" />
     <xacro:include filename="const.xacro" />
     <xacro:include filename="leg.xacro" />
     <xacro:include filename="gazebo.xacro" />
@@ -15,6 +18,63 @@
             </geometry>
         </visual>
     </link>
+
+    <!-- RealSense internal frames -->
+    <joint name="D435_to_camera" type="fixed">
+        <parent link="D435_camera_link" />
+        <child link="camera_link" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_link" />
+
+    <joint name="camera_to_infra1" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_infra1_frame" />
+        <origin xyz="0 0.025 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_infra1_frame" />
+
+    <joint name="camera_infra1_to_optical" type="fixed">
+        <parent link="camera_infra1_frame" />
+        <child link="camera_infra1_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="camera_infra1_optical_frame" />
+
+    <joint name="camera_to_infra2" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_infra2_frame" />
+        <origin xyz="0 -0.025 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_infra2_frame" />
+
+    <joint name="camera_infra2_to_optical" type="fixed">
+        <parent link="camera_infra2_frame" />
+        <child link="camera_infra2_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="camera_infra2_optical_frame" />
+
+    <joint name="camera_to_depth" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_depth_frame" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_depth_frame" />
+
+    <joint name="camera_depth_to_optical" type="fixed">
+        <parent link="camera_depth_frame" />
+        <child link="camera_depth_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="camera_depth_optical_frame" />
+
+    <joint name="camera_to_imu" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_imu_frame" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_imu_frame" />
 
     <joint name="floating_base" type="fixed">
         <origin rpy="0 0 0" xyz="0 0 0" />
@@ -42,6 +102,13 @@
         </inertial>
     </link>
 
+    <joint name="RGB_camera_to_optical" type="fixed">
+        <parent link="RGB_camera_link" />
+        <child link="rgb_camera_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="rgb_camera_optical_frame" />
+
     <joint name="imu_joint" type="fixed">
         <parent link="body" />
         <child link="imu_link" />
@@ -67,6 +134,41 @@
             </geometry>
         </collision>
     </link>
+
+    <joint name="AI_camera_to_optical" type="fixed">
+        <parent link="AI_camera_link" />
+        <child link="ai_camera_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="ai_camera_optical_frame" />
+
+    <joint name="body_to_left_fisheye" type="fixed">
+        <parent link="body" />
+        <child link="left_fisheye_camera_link" />
+        <origin xyz="0.095 0.125 0.100" rpy="0 0 1.5707963267948966" />
+    </joint>
+    <link name="left_fisheye_camera_link" />
+
+    <joint name="left_fisheye_to_optical" type="fixed">
+        <parent link="left_fisheye_camera_link" />
+        <child link="left_fisheye_camera_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="left_fisheye_camera_optical_frame" />
+
+    <joint name="body_to_right_fisheye" type="fixed">
+        <parent link="body" />
+        <child link="right_fisheye_camera_link" />
+        <origin xyz="0.095 -0.125 0.100" rpy="0 0 -1.5707963267948966" />
+    </joint>
+    <link name="right_fisheye_camera_link" />
+
+    <joint name="right_fisheye_to_optical" type="fixed">
+        <parent link="right_fisheye_camera_link" />
+        <child link="right_fisheye_camera_optical_frame" />
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    </joint>
+    <link name="right_fisheye_camera_optical_frame" />
 
     <joint name="scan_joint" type="fixed">
         <parent link="body" />

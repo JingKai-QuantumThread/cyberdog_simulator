@@ -38,6 +38,9 @@ find_package(gazebo_dev REQUIRED)
 find_package(gazebo_ros REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(cyberdog_msg REQUIRED)
+if((NOT DEFINED lcm_DIR OR lcm_DIR MATCHES "NOTFOUND") AND EXISTS "/usr/local/lib/lcm/cmake/lcmConfig.cmake")
+  set(lcm_DIR "/usr/local/lib/lcm/cmake")
+endif()
 find_package(lcm REQUIRED)
 
 

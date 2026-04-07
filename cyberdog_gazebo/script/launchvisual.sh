@@ -4,4 +4,4 @@
 source /opt/ros/galactic/setup.bash
 source install/setup.bash
 
-ros2 launch cyberdog_visual cyberdog_visual.launch.py
+ros2 launch cyberdog_visual cyberdog_visual.launch.py "$@"

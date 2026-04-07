@@ -25,6 +25,9 @@ def launch_setup(context, *args, **kwargs):
     # config
     hang_robot = LaunchConfiguration('hang_robot').perform(context)
     use_lidar = LaunchConfiguration('use_lidar').perform(context)
+    use_realsense_camera = LaunchConfiguration('use_realsense_camera').perform(context)
+    use_stereo_camera = LaunchConfiguration('use_stereo_camera').perform(context)
+    use_ai_camera = LaunchConfiguration('use_ai_camera').perform(context)
     rname = LaunchConfiguration('rname').perform(context)
     use_sim_time=LaunchConfiguration('use_sim_time')
 
@@ -37,7 +40,11 @@ def launch_setup(context, *args, **kwargs):
     # urdf
     xacro_path = os.path.join(description_share, 'xacro/robot.xacro')
     urdf_contents = xacro.process_file(xacro_path, mappings={
-                                       'DEBUG': hang_robot, 'USE_LIDAR': use_lidar}).toprettyxml(indent='  ')
+                                       'DEBUG': hang_robot,
+                                       'USE_LIDAR': use_lidar,
+                                       'USE_REALSENSE_CAMERA': use_realsense_camera,
+                                       'USE_STEREO_CAMERA': use_stereo_camera,
+                                       'USE_AI_CAMERA': use_ai_camera}).toprettyxml(indent='  ')
 
     # joint_state_publisher
     joint_state_node = Node(
@@ -92,6 +99,18 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             name='use_lidar',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_realsense_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_stereo_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_ai_camera',
             default_value='false'
         ),
         DeclareLaunchArgument(

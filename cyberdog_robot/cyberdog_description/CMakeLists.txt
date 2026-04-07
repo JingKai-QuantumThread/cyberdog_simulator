@@ -16,6 +16,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(gazebo_plugins REQUIRED)
+find_package(gazebo_ros REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -24,6 +26,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(xacro REQUIRED)
 
 install(
   DIRECTORY

@@ -36,6 +36,9 @@ def launch_setup(context, *args, **kwargs):
     # config
     hang_robot = LaunchConfiguration('hang_robot').perform(context)
     use_lidar = LaunchConfiguration('use_lidar').perform(context)
+    use_realsense_camera = LaunchConfiguration('use_realsense_camera').perform(context)
+    use_stereo_camera = LaunchConfiguration('use_stereo_camera').perform(context)
+    use_ai_camera = LaunchConfiguration('use_ai_camera').perform(context)
     wname = LaunchConfiguration('wname').perform(context)
     rname = LaunchConfiguration('rname').perform(context)
 
@@ -51,7 +54,11 @@ def launch_setup(context, *args, **kwargs):
     xacro_path = os.path.join(get_package_share_directory(
         rname+'_description'), 'xacro', 'robot.xacro')
     urdf_contents = xacro.process_file(xacro_path, mappings={
-                                       'DEBUG': hang_robot, 'USE_LIDAR': use_lidar}).toprettyxml(indent='  ')
+                                       'DEBUG': hang_robot,
+                                       'USE_LIDAR': use_lidar,
+                                       'USE_REALSENSE_CAMERA': use_realsense_camera,
+                                       'USE_STEREO_CAMERA': use_stereo_camera,
+                                       'USE_AI_CAMERA': use_ai_camera}).toprettyxml(indent='  ')
 
     # spawn
     spawn_entity_message_contents = "'{initial_pose:{ position: {x: 0, y: 0, z: 0.31}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}},  name: \""+ rname + "\", xml: \"" + \
@@ -124,6 +131,18 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name='use_lidar',
             default_value='true'
+        ),
+        DeclareLaunchArgument(
+            name='use_realsense_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_stereo_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_ai_camera',
+            default_value='false'
         ),
         DeclareLaunchArgument(
             name='rname',

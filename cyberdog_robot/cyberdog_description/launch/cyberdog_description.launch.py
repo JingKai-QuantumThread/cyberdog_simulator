@@ -16,7 +16,14 @@ def launch_setup(context, *args, **kwargs):
     # urdf
     xacro_path = os.path.join(get_package_share_directory(
         'cyberdog_description'), 'xacro', 'robot.xacro')
-    urdf_contents = xacro.process_file(xacro_path).toprettyxml(indent='  ')
+    urdf_contents = xacro.process_file(
+        xacro_path,
+        mappings={
+            'USE_LIDAR': LaunchConfiguration('use_lidar').perform(context),
+            'USE_REALSENSE_CAMERA': LaunchConfiguration('use_realsense_camera').perform(context),
+            'USE_STEREO_CAMERA': LaunchConfiguration('use_stereo_camera').perform(context),
+            'USE_AI_CAMERA': LaunchConfiguration('use_ai_camera').perform(context),
+        }).toprettyxml(indent='  ')
 
     joint_state_publisher_node = Node(
         package='joint_state_publisher_gui',
@@ -61,6 +68,22 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name='use_sim_time',
             default_value='true'
+        ),
+        DeclareLaunchArgument(
+            name='use_lidar',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_realsense_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_stereo_camera',
+            default_value='false'
+        ),
+        DeclareLaunchArgument(
+            name='use_ai_camera',
+            default_value='false'
         ),
         OpaqueFunction(function=launch_setup)
     ])
